@@ -1,7 +1,11 @@
-import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import './App.css';
-import Btn from './Components/Btn';
-import {Box, Container, Grid, Paper, TextField} from '@mui/material';
+import {PaperValue} from './Components/PaperValue';
+import {PaperDisplay} from './Components/PaperDisplay';
+import {Container, FormControlLabel, FormGroup, Grid, Paper} from '@mui/material';
+import Switch from '@mui/material/Switch';
+import {CompactPaper} from './Components/CompactPaper';
+
 
 function App() {
 
@@ -12,6 +16,8 @@ function App() {
     const [minValue, setMinValue] = useState(minValueCounter);
     const [maxValue, setMaxValue] = useState(maxValueCounter);
     const [error, setError] = useState<boolean>(true)
+    const [compact, setCompact] = useState(false)
+
 
 
     useEffect(() => {
@@ -60,85 +66,78 @@ function App() {
 
 
     return (
-        <Container fixed>
+        <Container fixed >
             <Grid container spacing={2} columns={16} paddingTop={'40px'}>
-
                 {/*Title*/}
                 <Grid item xs={16}>
                     <Paper elevation={4}>
-                        <div className={'counter'}>Counter</div>
+                        <FormGroup>
+                            <Container>
+                                <Grid container columns={16}>
+                                    <Grid item xs={7}>
+                                        <FormControlLabel className={'switch'} control={<Switch checked={compact} onChange={() => setCompact(!compact)}/>} label="compact"/>
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        <div className={'counter'}>Counter</div>
+                                    </Grid>
+                                </Grid>
+                            </Container>
+                        </FormGroup>
                     </Paper>
                 </Grid>
 
-                {/*Set Paper*/}
-                <Grid item xs={8}>
-                    <Paper elevation={4}>
-                        <Grid container padding={'10px'}>
 
-                            {/*Input start value*/}
-                            <Grid item xs={12}>
-                                <div>Start value</div>
-                                <div>
-                                    <TextField variant="outlined" color={'info'} focused
-                                               error={maxValue <= minValue || minValue < 0} size={'small'}
-                                               type={'number'} onChange={onChangeMinValueHandler} value={minValue}/>
-                                </div>
-                            </Grid>
-                            {/*Input max value*/}
-                            <Grid item xs={12}>
-                                <div>Max value</div>
-                                <div>
-                                    <TextField variant="outlined" color={'info'} focused
-                                               error={maxValue <= minValue || maxValue <= 0} size={'small'}
-                                               type={'number'} value={maxValue} onChange={onChangeMaxValueHandler}/>
-                                </div>
-                            </Grid>
-                            {/*// Set button*/}
-                            <Grid item xs={12} paddingTop={'5px'}>
-                                <Btn onClick={onClickSetHandler} name={'set'}
-                                     disabled={!error || minValue < 0 || maxValue <= minValue}/>
-                            </Grid>
-
+                {
+                    compact
+                        ? <Grid item xs={8} marginLeft={'25%'}>
+                            <Paper elevation={4}>
+                                <Grid container minHeight={'178px'}>
+                                    <CompactPaper error={error}
+                                                  minValue={minValue}
+                                                  maxValue={maxValue}
+                                                  value={value}
+                                                  onClickIncHandler={onClickIncHandler}
+                                                  onClickResetHandler={onClickResetHandler}
+                                                  onClickSetHandler={onClickSetHandler}
+                                                  onChangeMinValueHandler={onChangeMinValueHandler}
+                                                  onChangeMaxValueHandler={onChangeMaxValueHandler}
+                                    />
+                                </Grid>
+                            </Paper>
                         </Grid>
-                    </Paper>
-                </Grid>
 
 
-                {/*Inc and Reset Paper*/}
-                <Grid item xs={8}>
-                    <Paper elevation={4}>
-                        <Grid container minHeight={'178px'}>
-
-
-                            {/* display*/}
-                            <Grid item xs={12} textAlign={'center'} height={'130px'} paddingTop={'30px'}>
-
-                                {error
-
-                                    ? (minValue < 0 || maxValue <= minValue ? <div>incorrect value</div> :
-                                        <div>enter values and press 'set'</div>)  // error or warning
-
-                                    : (value === maxValue ? <div className={'maxValue'}>{value}</div> : <div
-                                        className={'value'}>{value}</div>)} {/*increase in the number of max Value*/}
-
+                        : <>
+                            {/*Paper Set*/}
+                            <Grid item xs={8}>
+                                <Paper elevation={4}>
+                                    <Grid container padding={'10px'}>
+                                        <PaperValue maxValue={maxValue}
+                                                    minValue={minValue}
+                                                    error={error}
+                                                    onChangeMaxValueHandler={onChangeMaxValueHandler}
+                                                    onChangeMinValueHandler={onChangeMinValueHandler}
+                                                    onClickSetHandler={onClickSetHandler}
+                                        />
+                                    </Grid>
+                                </Paper>
                             </Grid>
-
-                            {/*Inc Button*/}
-                            <Grid item xs={6} textAlign={'center'}>
-                                <Btn onClick={onClickIncHandler} disabled={error || value === maxValue} name={'inc'}/>
+                            {/*Display Paper*/}
+                            <Grid item xs={8}>
+                                <Paper elevation={4}>
+                                    <Grid container minHeight={'178px'}>
+                                        <PaperDisplay error={error}
+                                                      minValue={minValue}
+                                                      maxValue={maxValue}
+                                                      value={value}
+                                                      onClickIncHandler={onClickIncHandler}
+                                                      onClickResetHandler={onClickResetHandler}
+                                        />
+                                    </Grid>
+                                </Paper>
                             </Grid>
-
-                            {/*Reset Button*/}
-                            <Grid item xs={6} textAlign={'center'}>
-                                <Btn onClick={onClickResetHandler} disabled={error || value === minValue}
-                                     name={'reset'}/>
-                            </Grid>
-
-
-                        </Grid>
-                    </Paper>
-                </Grid>
-
+                        </>
+                }
 
             </Grid>
         </Container>
@@ -147,3 +146,4 @@ function App() {
 }
 
 export default App;
+
